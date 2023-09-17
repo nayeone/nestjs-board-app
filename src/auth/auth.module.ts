@@ -7,14 +7,18 @@ import { User } from './user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt-strategy';
+import * as config from 'config';
+import * as process from 'process';
+
+const jwtConfig = config.get('jwt');
 
 @Module({
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
-      secret: 'Secret1234',
+      secret: process.env.JWT_SECRET || jwtConfig.secret,
       signOptions: {
-        expiresIn: 60 * 60, // 1시간 유효하다는 의미
+        expiresIn: jwtConfig.expiresIn, // 1시간 유효하다는 의미
       },
     }),
     TypeOrmModule.forFeature([User]),
